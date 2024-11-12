@@ -79,5 +79,3 @@ CREATE TABLE IF NOT EXISTS inventario(
 		ON DELETE RESTRICT
 		ON UPDATE RESTRICT
 );
-
-has context menu
