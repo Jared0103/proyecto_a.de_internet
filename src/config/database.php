@@ -1,19 +1,17 @@
 <?php
 class Database {
-    private $host = "localhost:8889";
-    private $db_name = "APLICACIONESPROYECTO";
-    private $username = "root";
-    private $password = "root";
-    public $conn;
-    public function getConnection() {
-        $this->conn = null;
-        try {
-            $this->conn = new PDO("mysql:host=" . $this->host . ";dbname=" . $this->db_name, $this->username, $this->password);
-            $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        } catch(PDOException $e) {
-            echo "Connection error: " . $e->getMessage();
+    private static $dbConnection = null;
+
+    public static function getConnection() {
+        if (self::$dbConnection == null) {
+            try {
+                self::$dbConnection = new PDO('mysql:host=localhost;dbname=APLICACIONESPROYECTO', 'root', ''); 
+                self::$dbConnection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            } catch (PDOException $e) {
+                die("Connection failed: " . $e->getMessage());
+            }
         }
-        return $this->conn; 
+        return self::$dbConnection;
     }
 }
 ?>
