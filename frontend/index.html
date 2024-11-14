@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión - Tienda de Componentes</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+    <div class="container d-flex justify-content-center align-items-center vh-100">
+        <div class="card p-4 col-md-4">
+            <h3 class="text-center">Iniciar Sesión</h3>
+            <form id="loginForm">
+                <div class="mb-3">
+                    <label for="username" class="form-label">Usuario</label>
+                    <input type="text" class="form-control" id="username" required>
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">Contraseña</label>
+                    <input type="password" class="form-control" id="password" required>
+                </div>
+                <button type="submit" href="inventario.html" class="btn btn-primary w-100">Ingresar</button>
+                <span>Nuevo en la tienda? <a href="singup.html">Registrate</a></span> 
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            // Aquí simulas la validación de usuario, reemplaza con lógica real.
+            if (username === 'admin' && password === '1234') {
+                // Redirige a la página de inventario
+                window.location.href = 'inventario.html';
+            } else {
+                alert('Credenciales incorrectas, inténtalo de nuevo.');
+            }
+        });
+    </script>
+</body>
+</html>

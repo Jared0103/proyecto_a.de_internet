@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrito de Compras</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2 class="text-center mb-4">Carrito de Compras</h2>
+        
+        <!-- Tabla de carrito de compras -->
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Producto</th>
+                    <th>Cantidad</th>
+                    <th>Precio Unitario</th>
+                    <th>Total</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="carritoBody">
+                <!-- Aquí se agregan los productos mediante JavaScript -->
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="3" class="text-end fw-bold">Total:</td>
+                    <td id="carritoTotal" class="fw-bold">$0.00</td>
+                    <td></td>
+                </tr>
+            </tfoot>
+        </table>
+
+        <!-- Botones de acción -->
+        <div class="d-flex justify-content-end">
+            <button class="btn btn-secondary me-2" onclick="vaciarCarrito()">Vaciar Carrito</button>
+            <button class="btn btn-primary me-2" onclick="gotostore()">Regresar a la Tienda</button>
+            <button class="btn btn-success" onclick="realizarPedido()">Finalizar y Crear Pedido</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Datos de ejemplo para el carrito
+        const carrito = [
+            { id: 1, nombre: "Procesador Intel i7", cantidad: 1, precio: 5500.00 },
+            { id: 2, nombre: "Memoria RAM 16GB", cantidad: 2, precio: 1500.00 },
+            { id: 3, nombre: "Tarjeta Gráfica NVIDIA GTX 3060", cantidad: 1, precio: 12000.00 }
+        ];
+
+        // Renderiza los productos en el carrito
+        function renderCarrito() {
+            const carritoBody = document.getElementById("carritoBody");
+            carritoBody.innerHTML = ""; // Limpiar el contenido existente
+
+            let total = 0;
+            carrito.forEach((producto, index) => {
+                const totalProducto = producto.cantidad * producto.precio;
+                total += totalProducto;
+
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${producto.nombre}</td>
+                    <td>${producto.cantidad}</td>
+                    <td>$${producto.precio.toFixed(2)}</td>
+                    <td>$${totalProducto.toFixed(2)}</td>
+                    <td><button class="btn btn-danger btn-sm" onclick="eliminarProducto(${index})">Eliminar</button></td>
+                `;
+                carritoBody.appendChild(row);
+            });
+
+            document.getElementById("carritoTotal").textContent = `$${total.toFixed(2)}`;
+        }
+
+        function gotostore(){
+            window.location.href = 'inventario.html';
+        }
+
+        // Eliminar un producto del carrito
+        function eliminarProducto(index) {
+            carrito.splice(index, 1); // Elimina el producto del array
+            renderCarrito(); // Vuelve a renderizar el carrito
+        }
+
+        // Vaciar el carrito
+        function vaciarCarrito() {
+            carrito.length = 0; // Vacía el array de carrito
+            renderCarrito(); // Vuelve a renderizar
+            alert("El carrito ha sido vaciado.");
+        }
+
+        // Finalizar compra (simulación)
+        function finalizarCompra() {
+            alert("Compra finalizada. Gracias por su compra.");
+            carrito.length = 0; // Vacía el carrito después de la compra
+            renderCarrito();
+        }
+
+        // Realizar pedido (simulación)
+        function realizarPedido() {
+            alert("Pedido realizado. Nos pondremos en contacto para la entrega.");
+            carrito.length = 0; // Vacía el carrito después del pedido
+            renderCarrito();
+        }
+
+        // Inicializa la tabla del carrito al cargar la página
+        document.addEventListener("DOMContentLoaded", renderCarrito);
+    </script>
+</body>
+</html>

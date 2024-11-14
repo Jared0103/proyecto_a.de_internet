@@ -1,0 +1,23 @@
+body {
+    font-family: Arial, sans-serif;
+}
+
+.navbar-brand {
+    font-weight: bold;
+    font-size: 1.5em;
+}
+
+.container-fluid {
+    margin-top: 20px;
+}
+
+#cart-summary ul {
+    padding: 0;
+    margin: 0;
+}
+
+#cart-summary .list-group-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 1rem;
+}
