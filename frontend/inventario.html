@@ -13,12 +13,13 @@
         <div class="container-fluid">
             <a class="navbar-brand" href="#">Tienda de Componentes</a>
             <div class="d-flex">
-                <a href="carrito.html" class="btn btn-outline-light position-relative">
+                <a href="carrito.html" class="btn btn-outline-light position-relative me-2">
                     <i class="bi bi-cart"></i>
                     <span id="cart-count" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                         0
                     </span>
                 </a>
+                <button class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#addProductModal">Agregar Producto</button>
             </div>
         </div>
     </nav>
@@ -44,6 +45,7 @@
                 </table>
             </div>
 
+
             <!-- Cart Summary Sidebar -->
             <div class="col-md-4">
                 <div class="card">
@@ -66,3 +68,42 @@
     <script src="./js/index.js"></script>
 </body>
 </html>
+<!-- Modal for Adding New Product -->
+<div class="modal fade" id="addProductModal" tabindex="-1" aria-labelledby="addProductModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addProductModalLabel">Agregar Nuevo Producto</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addProductForm">
+                    <div class="mb-3">
+                        <label for="productName" class="form-label">Nombre del Producto</label>
+                        <input type="text" class="form-control" id="productName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="productDescription" class="form-label">Descripción</label>
+                        <textarea class="form-control" id="productDescription" rows="3" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="productPrice" class="form-label">Precio</label>
+                        <input type="number" class="form-control" id="productPrice" step="0.01" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Agregar Producto</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('addProductForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        // Aquí puedes agregar la lógica para añadir el producto al inventario
+        alert('Producto agregado exitosamente');
+        // Cierra el modal
+        var addProductModal = new bootstrap.Modal(document.getElementById('addProductModal'));
+        addProductModal.hide();
+    });
+</script>
