@@ -45,7 +45,6 @@
                 </table>
             </div>
 
-
             <!-- Cart Summary Sidebar -->
             <div class="col-md-4">
                 <div class="card">
@@ -68,6 +67,7 @@
     <script src="./js/index.js"></script>
 </body>
 </html>
+
 <!-- Modal for Adding New Product -->
 <div class="modal fade" id="addProductModal" tabindex="-1" aria-labelledby="addProductModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -100,9 +100,7 @@
 <script>
     document.getElementById('addProductForm').addEventListener('submit', function(event) {
         event.preventDefault();
-        // Aquí puedes agregar la lógica para añadir el producto al inventario
         alert('Producto agregado exitosamente');
-        // Cierra el modal
         var addProductModal = new bootstrap.Modal(document.getElementById('addProductModal'));
         addProductModal.hide();
     });
