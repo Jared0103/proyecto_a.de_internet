@@ -75,7 +75,7 @@ document.addEventListener('DOMContentLoaded', function() {
             alert('Producto agregado exitosamente');
             var addProductModal = new bootstrap.Modal(document.getElementById('addProductModal'));
             addProductModal.hide();
-            // Optionally, refresh the product list
+            fetchProducts(); // Refresh the product list
         })
         .catch(error => console.error('Error:', error));
     });
