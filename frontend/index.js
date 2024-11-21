@@ -1,5 +1,5 @@
 // URL base para el backend (ajusta si es necesario)
-const BASE_URL = 'http://localhost:8888/PHP-BASICO/proyecto_a.de_internet/backend';
+const BASE_URL = 'http://localhost:8888/proyecto_a.de_internet/backend';
 
 // Función para iniciar sesión
 function loginUsuario() {
@@ -22,26 +22,26 @@ function loginUsuario() {
             'Content-Type': 'application/x-www-form-urlencoded'
         }
     })
-    .then(response => response.json()) // Asegurarse de que la respuesta sea JSON
-    .then(data => {
-        if (data.success) {
-            alert(data.message); // Muestra el mensaje de éxito
-            window.location.href = "dashboard.html"; // Redirige a la página de dashboard
-        } else {
-            alert(data.message); // Muestra el mensaje de error
-        }
-    })
-    .catch(error => {
-        console.error("Error en el inicio de sesión:", error);
-        alert("Error en el inicio de sesión. Intenta nuevamente.");
-    });
+        .then(response => response.json()) // Asegurarse de que la respuesta sea JSON
+        .then(data => {
+            if (data.success) {
+                alert(data.message); // Muestra el mensaje de éxito
+                window.location.href = "dashboard.html"; // Redirige a la página de dashboard
+            } else {
+                alert(data.message); // Muestra el mensaje de error
+            }
+        })
+        .catch(error => {
+            console.error("Error en el inicio de sesión:", error);
+            alert("Error en el inicio de sesión. Intenta nuevamente.");
+        });
 }
 
 // Función para manejar el formulario de agregar productos
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Asegurarse de que el formulario sea procesado correctamente
     const form = document.getElementById('addInventoryForm');
-    form.addEventListener('submit', function(e) {
+    form.addEventListener('submit', function (e) {
         e.preventDefault();
 
         // Obtener los datos del formulario
@@ -71,19 +71,19 @@ document.addEventListener('DOMContentLoaded', function() {
             },
             body: JSON.stringify(producto)
         })
-        .then(response => response.json())
-        .then(data => {
-            console.log('Respuesta del servidor:', data);
-            if (data.success) {
-                agregarProductoTabla(data.producto);
-            } else {
-                alert('Error: ' + data.message); // Mostrar mensaje de error
-            }
-        })
-        .catch(error => {
-            console.error('Error en la solicitud:', error);
-            alert('Hubo un error al agregar el producto.');
-        });        
+            .then(response => response.json())
+            .then(data => {
+                console.log('Respuesta del servidor:', data);
+                if (data.success) {
+                    agregarProductoTabla(data.producto);
+                } else {
+                    alert('Error: ' + data.message); // Mostrar mensaje de error
+                }
+            })
+            .catch(error => {
+                console.error('Error en la solicitud:', error);
+                alert('Hubo un error al agregar el producto.');
+            });
     });
 
     // Cargar los productos al iniciar la página
@@ -92,29 +92,72 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Función para agregar el producto a la tabla
 function agregarProductoTabla(producto) {
-    // Asegúrate de que el tbody con id 'products-table' exista
+    console.log(producto);  // Verifica que los datos del producto sean correctos
+
+    // Crear una nueva fila para el producto
+    const row = document.createElement('tr');
+    row.setAttribute('data-id', producto.pro_id); // Establecer el ID del producto en el atributo 'data-id'
+
+    // Crear las celdas con los datos del producto
+    row.innerHTML = `
+        <td>${producto.pro_nombre}</td>
+        <td>${producto.pro_descripcion}</td>
+        <td>${producto.pro_precio}</td>
+        <td>
+            <button class="btn btn-danger" onclick="eliminarProducto(this)">Eliminar</button>
+        </td>
+    `;
+
+    // Agregar la fila a la tabla
     const tableBody = document.getElementById('products-table');
-    if (!tableBody) {
-        console.error('El elemento tbody con id "products-table" no se encuentra.');
-        return;
+    if (tableBody) {
+        tableBody.appendChild(row);
+    } else {
+        console.error('No se encontró el elemento de la tabla.');
     }
-
-    // Crear una nueva fila en la tabla
-    const row = tableBody.insertRow();
-
-    // Insertar celdas con los datos del producto
-    row.insertCell(0).textContent = producto.pro_nombre;
-    row.insertCell(1).textContent = producto.pro_descripcion;
-    row.insertCell(2).textContent = producto.pro_precio;
-    row.insertCell(3).textContent = producto.pro_cantidad;
-    row.insertCell(4).innerHTML = `<button class="btn btn-danger" onclick="eliminarProducto(this)">Eliminar</button>`;
 }
+
 
 // Función para eliminar un producto de la tabla
 function eliminarProducto(button) {
-    const row = button.parentElement.parentElement;
-    row.remove();
+    const row = button.parentElement.parentElement; // Obtiene la fila de la tabla
+    const productoId = row.getAttribute('data-id'); // Obtiene el ID del producto (debe estar en el atributo data-id de la fila)
+
+    // Verifica que el productoId existe
+    if (!productoId) {
+        alert('Error: no se encontró el ID del producto');
+        return;
+    }
+
+    // Confirmación antes de eliminar
+    if (confirm('¿Estás seguro de que deseas eliminar este producto?')) {
+        // Hacer una solicitud al servidor para eliminar el producto
+        fetch('../backend/deleteProducto.php', {  // La URL del archivo PHP para eliminar el producto
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                producto_id: productoId  // Enviar el ID del producto
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Si la eliminación fue exitosa, elimina la fila de la tabla
+                    row.remove();
+                    alert('Producto eliminado exitosamente');
+                } else {
+                    alert('Error al eliminar el producto: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Hubo un problema con la solicitud');
+            });
+    }
 }
+
 
 // Función para cargar todos los productos desde la base de datos
 function cargarProductos() {

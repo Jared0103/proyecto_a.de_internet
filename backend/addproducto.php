@@ -46,12 +46,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         }
     } else {
+        // Si el producto ya existe, obtenemos el ID
         $producto_id = $stmt_check_producto->fetchColumn();
     }
 
     // Insertar la acción en el inventario
     $sql_insert_inventario = "INSERT INTO inventario (inv_fecha, inv_accion, inv_cantidad, inv_pro_id, inv_adm_id) 
-                              VALUES (NOW(), :accion, :cantidad, :producto_id, :admin_id)";
+                              VALUES (CURDATE(), :accion, :cantidad, :producto_id, :admin_id)";
     $stmt_insert_inventario = $conn->prepare($sql_insert_inventario);
     $stmt_insert_inventario->bindParam(':accion', $accion);
     $stmt_insert_inventario->bindParam(':cantidad', $cantidad, PDO::PARAM_INT);
@@ -59,6 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt_insert_inventario->bindParam(':admin_id', $admin_id, PDO::PARAM_INT);
 
     if ($stmt_insert_inventario->execute()) {
+        // Respuesta exitosa
         echo json_encode([ 
             'success' => true,
             'message' => 'Producto agregado al inventario',
@@ -72,6 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ]
         ]);
     } else {
+        // Error al insertar el producto en el inventario
         echo json_encode(['success' => false, 'message' => 'Error al agregar producto al inventario']);
     }
 
