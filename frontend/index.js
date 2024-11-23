@@ -64,13 +64,77 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Enviar los datos al servidor
         console.log("Datos enviados:", producto);
-        fetch(`${BASE_URL}/addproducto.php`, {
+        fetch(`../backend/addproducto.php`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(producto)
         })
+        .then(response => {
+            // Verificamos si la respuesta es exitosa (código de estado 2xx)
+            if (!response.ok) {
+                throw new Error(`Error en la respuesta: ${response.status}`);
+            }
+            return response.json(); // Si es exitosa, parseamos el JSON
+        })
+        .then(data => {
+            console.log('Respuesta del servidor:', data);
+            if (data.success) {
+                agregarProductoTabla(data.producto);
+            } else {
+                alert('Error: ' + data.message); // Mostrar mensaje de error
+            }
+        })
+        .catch(error => {
+            console.error('Error en la solicitud:', error);
+            alert('Hubo un error al agregar el producto.');
+        })        
+            .then(response => {
+                // Log para ver el contenido de la respuesta antes de convertirla
+                console.log("Respuesta del servidor:", response);
+                // Verificar si la respuesta es correcta
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.status}`);
+                }
+                return response.text(); // Obtener como texto para ver el contenido
+            })
+            .then(text => {
+                console.log("Respuesta como texto:", text);
+                try {
+                    const data = JSON.parse(text); // Intentamos convertir el texto en JSON
+                    console.log('Respuesta del servidor:', data);
+                    if (data.success) {
+                        agregarProductoTabla(data.producto);
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                } catch (e) {
+                    console.error("Error al parsear JSON:", e);
+                    alert('Error al procesar la respuesta del servidor.');
+                }
+            })
+            .catch(error => {
+                console.error('Error en la solicitud:', error);
+                alert('Hubo un error al agregar el producto.');
+            })        
+            .then(response => {
+                // Verifica si la respuesta es válida
+                console.log("Respuesta del servidor:", response);
+                return response.json();
+            })
+            .then(data => {
+                console.log('Respuesta del servidor:', data);
+                if (data.success) {
+                    agregarProductoTabla(data.producto);
+                } else {
+                    alert('Error: ' + data.message); // Mostrar mensaje de error
+                }
+            })
+            .catch(error => {
+                console.error('Error en la solicitud:', error);
+                alert('Hubo un error al agregar el producto.');
+            })        
             .then(response => response.json())
             .then(data => {
                 console.log('Respuesta del servidor:', data);
