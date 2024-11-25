@@ -20,19 +20,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $admin_id = $data['admin_id'] ?? '';
 
     // Verificar que los datos no estén vacíos
-    if (empty($producto_nombre) || empty($producto_descripcion) || empty($producto_precio) || empty($accion) || empty($cantidad) || empty($admin_id)) {
+    if (empty($producto_nombre) || empty($producto_descripcion) || empty($producto_precio) || empty($accion) || empty($cantidad)) {
         echo json_encode(['success' => false, 'message' => 'Faltan datos']);
         exit;
     }
 
-    // Verificar si el producto existe en la base de datos
+    
     $sql_check_producto = "SELECT pro_id FROM producto WHERE pro_nombre = :producto_nombre";
     $stmt_check_producto = $conn->prepare($sql_check_producto);
     $stmt_check_producto->bindParam(':producto_nombre', $producto_nombre);
     $stmt_check_producto->execute();
 
     if ($stmt_check_producto->rowCount() == 0) {
-        // Si el producto no existe, lo insertamos
         $sql_insert_producto = "INSERT INTO producto (pro_nombre, pro_descripcion, pro_precio) VALUES (:producto_nombre, :producto_descripcion, :producto_precio)";
         $stmt_insert_producto = $conn->prepare($sql_insert_producto);
         $stmt_insert_producto->bindParam(':producto_nombre', $producto_nombre);
@@ -49,14 +48,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $producto_id = $stmt_check_producto->fetchColumn();
     }
 
-    // Insertar la acción en el inventario
-    $sql_insert_inventario = "INSERT INTO inventario (inv_fecha, inv_accion, inv_cantidad, inv_pro_id, inv_adm_id) 
-                              VALUES (NOW(), :accion, :cantidad, :producto_id, :admin_id)";
+    $sql_insert_inventario = "INSERT INTO inventario (inv_fecha, inv_accion, inv_cantidad, inv_pro_id) 
+                              VALUES (NOW(), :accion, :cantidad, :producto_id)";
     $stmt_insert_inventario = $conn->prepare($sql_insert_inventario);
     $stmt_insert_inventario->bindParam(':accion', $accion);
     $stmt_insert_inventario->bindParam(':cantidad', $cantidad, PDO::PARAM_INT);
     $stmt_insert_inventario->bindParam(':producto_id', $producto_id, PDO::PARAM_INT);
-    $stmt_insert_inventario->bindParam(':admin_id', $admin_id, PDO::PARAM_INT);
 
     if ($stmt_insert_inventario->execute()) {
         echo json_encode([ 
@@ -75,7 +72,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         echo json_encode(['success' => false, 'message' => 'Error al agregar producto al inventario']);
     }
 
-    // Cerrar conexiones
     $stmt_check_producto = null;
     $stmt_insert_producto = null;
     $stmt_insert_inventario = null;

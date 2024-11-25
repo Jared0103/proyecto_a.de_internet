@@ -50,16 +50,14 @@ document.addEventListener('DOMContentLoaded', function() {
         const productoPrecio = document.getElementById('producto_precio').value;
         const accion = document.getElementById('accion').value;
         const cantidad = document.getElementById('cantidad').value;
-        const adminId = document.getElementById('admin_id').value;
 
         // Crear el objeto del producto con las claves correctas
         const producto = {
-            producto_nombre: productoNombre,  // Cambiado para que coincida con lo que espera el servidor
-            producto_descripcion: productoDescripcion,  // Cambiado para que coincida con lo que espera el servidor
-            producto_precio: productoPrecio,  // Cambiado para que coincida con lo que espera el servidor
+            producto_nombre: productoNombre,
+            producto_descripcion: productoDescripcion,
+            producto_precio: productoPrecio,
             accion: accion,
-            cantidad: cantidad,
-            admin_id: adminId  // Asegúrate de que este valor sea correcto y válido
+            cantidad: cantidad
         };
 
         // Enviar los datos al servidor
@@ -101,38 +99,63 @@ function agregarProductoTabla(producto) {
 
     // Crear una nueva fila en la tabla
     const row = tableBody.insertRow();
+    row.id = `producto-${producto.pro_id}`; // Establece el ID de la fila para identificarla
 
     // Insertar celdas con los datos del producto
     row.insertCell(0).textContent = producto.pro_nombre;
     row.insertCell(1).textContent = producto.pro_descripcion;
     row.insertCell(2).textContent = producto.pro_precio;
     row.insertCell(3).textContent = producto.pro_cantidad;
-    row.insertCell(4).innerHTML = `<button class="btn btn-danger" onclick="eliminarProducto(this)">Eliminar</button>`;
+    row.insertCell(4).innerHTML = `<button class="btn btn-danger" onclick="eliminarProducto(${producto.pro_id})">Eliminar</button>`;
 }
 
-// Función para eliminar un producto de la tabla
-function eliminarProducto(button) {
-    const row = button.parentElement.parentElement;
-    row.remove();
-}
-
-// Función para cargar todos los productos desde la base de datos
-function cargarProductos() {
-    fetch(`${BASE_URL}/getproducto.php`) // Llamamos al archivo PHP que devuelve los productos
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Si la respuesta es exitosa, mostramos los productos en la tabla
-                const productos = data.productos;
-                productos.forEach(producto => {
-                    agregarProductoTabla(producto); // Llamamos a la función para agregar cada producto a la tabla
-                });
-            } else {
-                alert('No se pudieron cargar los productos');
-            }
+// Función para eliminar un producto de la base de datos y de la tabla (frontend)
+function eliminarProducto(id) {
+    // Realizamos la solicitud para eliminar el producto de la base de datos
+    fetch(`${BASE_URL}/eliminarproducto.php`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: new URLSearchParams({
+            'id': id
         })
-        .catch(error => {
-            console.error('Error al obtener productos:', error);
-            alert('Hubo un error al cargar los productos.');
-        });
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Respuesta del servidor:', data);
+
+        if (data.status === "success") {
+            // Eliminar producto de la tabla en el frontend
+            const row = document.getElementById(`producto-${id}`);
+            if (row) {
+                row.remove(); // Elimina la fila de la tabla
+            }
+            alert(data.message); // Muestra un mensaje de éxito
+        } else {
+            alert(data.message); // Muestra un mensaje de error
+        }
+    })
+    .catch(error => {
+        console.error('Error en la solicitud:', error);
+        alert('Hubo un error al eliminar el producto');
+    });
+}
+
+// Función para cargar productos al iniciar la página (suponiendo que la lógica backend ya esté lista)
+function cargarProductos() {
+    fetch(`${BASE_URL}/getproducto.php`)
+    .then(response => response.json())
+    .then(data => {
+        if (data.success && data.productos) {
+            data.productos.forEach(producto => {
+                agregarProductoTabla(producto);
+            });
+        } else {
+            console.error("Error al cargar los productos:", data.message);
+        }
+    })
+    .catch(error => {
+        console.error("Error al cargar productos:", error);
+    });
 }
