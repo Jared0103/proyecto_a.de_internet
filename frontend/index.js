@@ -1,6 +1,7 @@
 // URL base para el backend (ajusta si es necesario)
 const BASE_URL = 'http://localhost:8888/PHP-BASICO/proyecto_a.de_internet/backend';
-
+const productos = [];
+const carrito = [];
 // Función para iniciar sesión
 function loginUsuario() {
     const usuario = document.getElementById("usuario").value;
@@ -41,48 +42,50 @@ function loginUsuario() {
 document.addEventListener('DOMContentLoaded', function() {
     // Asegurarse de que el formulario sea procesado correctamente
     const form = document.getElementById('addInventoryForm');
-    form.addEventListener('submit', function(e) {
-        e.preventDefault();
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
 
-        // Obtener los datos del formulario
-        const productoNombre = document.getElementById('producto_nombre').value;
-        const productoDescripcion = document.getElementById('producto_descripcion').value;
-        const productoPrecio = document.getElementById('producto_precio').value;
-        const accion = document.getElementById('accion').value;
-        const cantidad = document.getElementById('cantidad').value;
+            // Obtener los datos del formulario
+            const productoNombre = document.getElementById('producto_nombre').value;
+            const productoDescripcion = document.getElementById('producto_descripcion').value;
+            const productoPrecio = document.getElementById('producto_precio').value;
+            const accion = document.getElementById('accion').value;
+            const cantidad = document.getElementById('cantidad').value;
 
-        // Crear el objeto del producto con las claves correctas
-        const producto = {
-            producto_nombre: productoNombre,
-            producto_descripcion: productoDescripcion,
-            producto_precio: productoPrecio,
-            accion: accion,
-            cantidad: cantidad
-        };
+            // Crear el objeto del producto con las claves correctas
+            const producto = {
+                producto_nombre: productoNombre,
+                producto_descripcion: productoDescripcion,
+                producto_precio: productoPrecio,
+                accion: accion,
+                cantidad: cantidad
+            };
 
-        // Enviar los datos al servidor
-        console.log("Datos enviados:", producto);
-        fetch(`${BASE_URL}/addproducto.php`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(producto)
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log('Respuesta del servidor:', data);
-            if (data.success) {
-                agregarProductoTabla(data.producto);
-            } else {
-                alert('Error: ' + data.message); // Mostrar mensaje de error
-            }
-        })
-        .catch(error => {
-            console.error('Error en la solicitud:', error);
-            alert('Hubo un error al agregar el producto.');
-        });        
-    });
+            // Enviar los datos al servidor
+            console.log("Datos enviados:", producto);
+            fetch(`${BASE_URL}/addproducto.php`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(producto)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Respuesta del servidor:', data);
+                if (data.success) {
+                    agregarProductoTabla(data.producto);
+                } else {
+                    alert('Error: ' + data.message); // Mostrar mensaje de error
+                }
+            })
+            .catch(error => {
+                console.error('Error en la solicitud:', error);
+                alert('Hubo un error al agregar el producto.');
+            });        
+        });
+    }
 
     // Cargar los productos al iniciar la página
     cargarProductos();
@@ -142,20 +145,17 @@ function eliminarProducto(id) {
     });
 }
 
-// Función para cargar productos al iniciar la página (suponiendo que la lógica backend ya esté lista)
 function cargarProductos() {
-    fetch(`${BASE_URL}/getproducto.php`)
-    .then(response => response.json())
-    .then(data => {
-        if (data.success && data.productos) {
-            data.productos.forEach(producto => {
-                agregarProductoTabla(producto);
-            });
-        } else {
-            console.error("Error al cargar los productos:", data.message);
-        }
-    })
-    .catch(error => {
-        console.error("Error al cargar productos:", error);
-    });
+    fetch("../backend/getproducto.php") // Ajusta la ruta de la API
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.productos) {
+                renderProductos(data.productos); // Renderizar productos en la tabla
+            } else {
+                console.error("Error al cargar los productos:", data.message);
+            }
+        })
+        .catch(error => {
+            console.error("Error al cargar productos:", error);
+        });
 }
