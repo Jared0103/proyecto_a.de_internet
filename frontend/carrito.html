@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrito de Compras</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <div class="position-fixed top-0 start-0 p-3">
+        <button class="btn btn-light btn-sm" onclick="window.location.href='catalogo.html'" title="Volver al Catálogo">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M15 8a.5.5 0 0 1-.5.5H2.707l4.147 4.146a.5.5 0 0 1-.708.708l-5-5a.5.5 0 0 1 0-.708l5-5a.5.5 0 0 1 .708.708L2.707 7.5H14.5A.5.5 0 0 1 15 8z"/>
+            </svg>
+        </button>
+    </div>
+
+    <div class="container mt-5">
+        <div class="text-center mb-4">
+            <img src="https://cdn.shopify.com/s/files/1/0626/9314/6787/files/electronics_logo_e281c840-3ba2-47ac-8e1b-331ab78d5b40.png?v=1697188531" alt="Logo Tienda" style="width: 100px; height: auto;">
+        </div>
+        <h2 class="text-center mb-4">Carrito de Compras</h2>
+
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Producto</th>
+                    <th>Cantidad</th>
+                    <th>Precio Unitario</th>
+                    <th>Total</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="carritoBody"></tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="3" class="text-end fw-bold">Total:</td>
+                    <td id="carritoTotal" class="fw-bold">$0.00</td>
+                    <td></td>
+                </tr>
+            </tfoot>
+        </table>
+
+        <div class="d-flex justify-content-end">
+            <button class="btn btn-secondary me-2" onclick="vaciarCarrito()">Vaciar Carrito</button>
+            <button class="btn btn-primary me-2" onclick="gotostore()">Regresar a la Tienda</button>
+            <button class="btn btn-success" onclick="finalizarCompra()">Finalizar Compra</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const carrito = [
+            { id: 1, nombre: "Procesador Intel i7", cantidad: 1, precio: 5500.00 },
+            { id: 2, nombre: "Memoria RAM 16GB", cantidad: 2, precio: 1500.00 },
+            { id: 3, nombre: "Tarjeta Gráfica NVIDIA GTX 3060", cantidad: 1, precio: 12000.00 }
+        ];
+
+        function renderCarrito() {
+            const carritoBody = document.getElementById("carritoBody");
+            carritoBody.innerHTML = "";
+            let total = 0;
+
+            carrito.forEach((producto, index) => {
+                const totalProducto = producto.cantidad * producto.precio;
+                total += totalProducto;
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${producto.nombre}</td>
+                    <td>${producto.cantidad}</td>
+                    <td>$${producto.precio.toFixed(2)}</td>
+                    <td>$${totalProducto.toFixed(2)}</td>
+                    <td><button class="btn btn-danger btn-sm" onclick="eliminarProducto(${index})">Eliminar</button></td>
+                `;
+                carritoBody.appendChild(row);
+            });
+
+            document.getElementById("carritoTotal").textContent = `$${total.toFixed(2)}`;
+        }
+
+        function gotostore() {
+            window.location.href = 'catalogo.html';
+        }
+
+        function eliminarProducto(index) {
+            carrito.splice(index, 1);
+            renderCarrito();
+            alert("Producto eliminado con éxito.");
+        }
+
+        function vaciarCarrito() {
+            carrito.length = 0;
+            renderCarrito();
+            alert("El carrito ha sido vaciado.");
+        }
+
+        function finalizarCompra() {
+            if (carrito.length === 0) {
+                alert("El carrito está vacío. No hay productos para comprar.");
+            } else {
+                alert("Compra realizada con éxito. ¡Gracias por su preferencia!");
+                carrito.length = 0;
+                renderCarrito();
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", renderCarrito);
+    </script>
+</body>
+</html>
