@@ -30,6 +30,7 @@
                             <th>Producto</th>
                             <th>Descripción</th>
                             <th>Precio</th>
+                            <th>Cantidad</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
@@ -86,86 +87,6 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-    <script>
-        // Productos de ejemplo
-        const productos = [
-            {
-                nombre: "Procesador Intel i7",
-                descripcion: "8 núcleos, 16 hilos, velocidad base de 2.9 GHz.",
-                precio: 5500.00
-            },
-            {
-                nombre: "Tarjeta Madre ASUS Prime",
-                descripcion: "Compatible con procesadores Intel de 10ma generación.",
-                precio: 3200.00
-            },
-            {
-                nombre: "Memoria RAM Corsair 16GB",
-                descripcion: "Velocidad de 3200 MHz, ideal para gaming y diseño.",
-                precio: 1800.00
-            },
-            {
-                nombre: "SSD Samsung 1TB",
-                descripcion: "Unidad de estado sólido con velocidades de lectura de hasta 3500 MB/s.",
-                precio: 3000.00
-            },
-            {
-                nombre: "Fuente de Poder EVGA 600W",
-                descripcion: "80 Plus Bronze, ideal para sistemas de alto rendimiento.",
-                precio: 1500.00
-            }
-        ];
-
-        // Renderizar productos en la tabla
-        const renderProductos = () => {
-            const tableBody = document.getElementById("products-table");
-            tableBody.innerHTML = ""; // Limpia el contenido previo
-
-            productos.forEach((producto, index) => {
-                const row = document.createElement("tr");
-                row.innerHTML = `
-                    <td>${producto.nombre}</td>
-                    <td>${producto.descripcion}</td>
-                    <td>$${producto.precio.toFixed(2)}</td>
-                    <td>
-                        <button class="btn btn-success btn-sm me-2" onclick="agregarAlCarrito(${index})">Agregar</button>
-                        <button class="btn btn-info btn-sm" onclick="verDetalles(${index})">Detalles</button>
-                    </td>
-                `;
-                tableBody.appendChild(row);
-            });
-        };
-
-        // Lógica para agregar al carrito
-        const carrito = [];
-        const agregarAlCarrito = (index) => {
-            const producto = productos[index];
-            carrito.push(producto);
-            actualizarResumenCarrito();
-            alert(`Se agregó "${producto.nombre}" al carrito.`);
-        };
-
-        // Ver detalles del producto
-        const verDetalles = (index) => {
-            const producto = productos[index];
-            alert(`Detalles del producto:\n\n${producto.nombre}\n${producto.descripcion}\nPrecio: $${producto.precio.toFixed(2)}`);
-        };
-
-        // Actualizar resumen del carrito
-        const actualizarResumenCarrito = () => {
-            const resumenCarrito = document.getElementById("cart-summary");
-            if (carrito.length === 0) {
-                resumenCarrito.innerHTML = "<p>Tu carrito está vacío.</p>";
-            } else {
-                resumenCarrito.innerHTML = carrito.map((producto, index) => `
-                    <p>${producto.nombre} - $${producto.precio.toFixed(2)}</p>
-                `).join("");
-            }
-        };
-
-        // Inicializar productos al cargar la página
-        document.addEventListener("DOMContentLoaded", renderProductos);
-    </script>
+    <script src="catalogo.js"></script>
 </body>
 </html>
