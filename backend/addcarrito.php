@@ -14,15 +14,15 @@ try {
     $cantidad = $inputData['cantidad']; // Cantidad a agregar
 
     // Verificar si el usuario tiene un carrito abierto
-    $queryCarrito = "SELECT car_id FROM carrito WHERE car_usu_id = :usuarioId";
+    $queryCarrito = "SELECT car_id FROM carrito WHERE car_usu_id = :usuarioId AND car_estado = 'abierto'";
     $stmtCarrito = $conn->prepare($queryCarrito);
     $stmtCarrito->bindParam(':usuarioId', $usuarioId, PDO::PARAM_INT);
     $stmtCarrito->execute();
     $carrito = $stmtCarrito->fetch(PDO::FETCH_ASSOC);
 
-    // Si no existe un carrito, crearlo
+    // Si no existe un carrito abierto, crearlo
     if (!$carrito) {
-        $queryCrearCarrito = "INSERT INTO carrito (car_total, car_usu_id) VALUES (0, :usuarioId)";
+        $queryCrearCarrito = "INSERT INTO carrito (car_total, car_usu_id, car_estado) VALUES (0, :usuarioId, 'abierto')";
         $stmtCrearCarrito = $conn->prepare($queryCrearCarrito);
         $stmtCrearCarrito->bindParam(':usuarioId', $usuarioId, PDO::PARAM_INT);
         $stmtCrearCarrito->execute();

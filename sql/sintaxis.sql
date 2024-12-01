@@ -79,3 +79,6 @@ CREATE TABLE IF NOT EXISTS inventario(
 		ON DELETE RESTRICT
 		ON UPDATE RESTRICT
 );
+
+-- Agregar columna estado a la tabla carrito
+ALTER TABLE carrito ADD COLUMN car_estado VARCHAR(20) DEFAULT 'abierto';

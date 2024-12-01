@@ -24,7 +24,7 @@ try {
         FROM carrito c
         JOIN detallecarrito dc ON c.car_id = dc.det_car_id
         JOIN producto p ON dc.det_pro_id = p.pro_id
-        WHERE c.car_usu_id = :usuarioId
+        WHERE c.car_usu_id = :usuarioId AND c.car_estado = 'abierto'
     ";
     $stmt = $conn->prepare($query);
     $stmt->bindParam(':usuarioId', $usuarioId, PDO::PARAM_INT);

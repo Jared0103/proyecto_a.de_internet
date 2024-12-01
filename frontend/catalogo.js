@@ -76,55 +76,57 @@ document.addEventListener("DOMContentLoaded", function () {
     const cargarCarrito = () => {
         console.log('Cargando carrito...');
         // Realizar la solicitud para obtener el carrito
-        const usuarioId = 1; // Asegúrate de que el usuarioId es el correcto
         console.log(`Solicitando carrito para usuarioId: ${usuarioId}`);
     
         fetch(`${BASE_URL}/getcarrito.php?usuarioId=${usuarioId}`)
-            .then(response => {
-                console.log('Respuesta recibida del servidor:', response);
-                return response.json();
-            })
+            .then(response => response.json())
             .then(data => {
-                console.log('Datos obtenidos de la API:', data);
-    
+                console.log('Respuesta recibida del servidor:', data);
                 if (data.success) {
-                    // Aquí cambiamos 'carrito' por 'productos' porque el backend devuelve 'productos'
-                    if (Array.isArray(data.productos)) {
-                        const carrito = data.productos;  // Cambiar 'carrito' por 'productos'
-                        console.log('Carrito:', carrito);
-                        
-                        if (carrito.length === 0) {
-                            console.log('Carrito vacío');
-                            document.getElementById('cart-summary').innerHTML = "<p>Tu carrito está vacío.</p>";
-                        } else {
-                            console.log('Mostrando productos del carrito');
-                            document.getElementById('cart-summary').innerHTML = `
-                                <h5>Resumen del Carrito</h5>
-                                <ul>
-                                    ${carrito.map(item => {
-                                        // Asegúrate de que 'item.det_cantidad' esté presente y es válido
-                                        return `<li>${item.pro_nombre}: ${item.det_cantidad}</li>`;
-                                    }).join('')}
-                                </ul>
-                                <p>Total: $${data.carritoTotal}</p>  <!-- Mostrar el total -->
-                            `;
-                        }
-                    } else {
-                        console.error('Respuesta inesperada: El carrito no es un arreglo', data);
-                        document.getElementById('cart-summary').innerHTML = "<p>Error al cargar los productos del carrito.</p>";
-                    }
+                    const carrito = data.productos;
+                    const carritoBody = document.getElementById("carritoBody");
+                    const carritoTotal = document.getElementById("carritoTotal");
+
+                    let total = 0;
+                    carritoBody.innerHTML = "";
+
+                    carrito.forEach((item, index) => {
+                        console.log('Producto en carrito:', item);
+
+                        const totalProducto = item.det_cantidad * item.pro_precio;
+                        total += totalProducto;
+
+                        const row = document.createElement("tr");
+                        row.innerHTML = `
+                            <td>${item.pro_nombre}</td>
+                            <td>
+                                <input type="number" 
+                                    class="form-control form-control-sm" 
+                                    value="${item.det_cantidad}" 
+                                    min="1" 
+                                    id="cantidad_${item.det_id}" 
+                                    onchange="actualizarCantidad(${item.det_id})">
+                            </td>
+                            <td>$${item.pro_precio}</td>
+                            <td>$${totalProducto.toFixed(2)}</td>
+                            <td>
+                                <button class="btn btn-danger btn-sm" onclick="eliminarProducto(${item.det_id})">Eliminar</button>
+                            </td>
+                        `;
+                        carritoBody.appendChild(row);
+                    });
+
+                    carritoTotal.textContent = `$${total.toFixed(2)}`;
                 } else {
-                    console.error('Error al cargar el carrito:', data.message);
-                    document.getElementById('cart-summary').innerHTML = "<p>Error al cargar el carrito.</p>";
+                    alert("No se pudo cargar el carrito.");
                 }
             })
             .catch(error => {
                 console.error('Error al cargar el carrito:', error);
-                document.getElementById('cart-summary').innerHTML = "<p>Error al cargar el carrito.</p>";
+                alert("Hubo un problema al cargar el carrito.");
             });
     };
-    
-    
+
     // Cargar el carrito al inicio
     cargarCarrito();
 });
