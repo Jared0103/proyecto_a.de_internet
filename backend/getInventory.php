@@ -1,6 +1,6 @@
 <?php
 
-require_once 'db.php';
+require_once 'database.php';
 
 $sql = "SELECT p.pro_nombre, i.inv_accion, i.inv_cantiad, i.inv_fecha
         FROM inventario i

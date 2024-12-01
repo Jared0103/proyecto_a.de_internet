@@ -1,40 +1,62 @@
 <?php
 header('Content-Type: application/json');
-require_once 'database.php'; // Conexión a la base de datos
+include 'database.php'; // Asegúrate de que este archivo contiene la conexión PDO en $conn
 
-// Verifica si la conexión es exitosa
-$conn = (new Database())->getConnection();
-if (!$conn) {
-    echo json_encode(["status" => "error", "message" => "Error de conexión a la base de datos."]);
+$database = new Database();
+$conn = $database->getConnection();
+
+// Obtener los datos de la solicitud
+$data = json_decode(file_get_contents('php://input'), true);
+$usuarioId = $data['usuarioId'] ?? null;
+$productoId = $data['productoId'] ?? null;
+
+// Verifica si los parámetros están correctamente definidos
+if (!$usuarioId || !$productoId) {
+    echo json_encode(['success' => false, 'message' => 'Usuario o producto no especificado.']);
     exit;
 }
 
-// Verifica si el ID del producto ha sido recibido
-if (isset($_POST['id'])) {
-    $id = intval($_POST['id']); // Asegúrate de que el ID es un número entero
+try {
+    // Verifica si el carrito está abierto
+    $queryCarrito = "SELECT car_id FROM carrito WHERE car_usu_id = :usuarioId AND car_estado = 'abierto'";
+    $stmtCarrito = $conn->prepare($queryCarrito);
+    $stmtCarrito->bindParam(':usuarioId', $usuarioId, PDO::PARAM_INT);
+    $stmtCarrito->execute();
+    $carrito = $stmtCarrito->fetch(PDO::FETCH_ASSOC);
 
-    if ($id <= 0) {
-        echo json_encode(["status" => "error", "message" => "ID inválido"]);
+    if (!$carrito) {
+        echo json_encode(['success' => false, 'message' => 'El carrito no está abierto o no existe.']);
         exit;
     }
 
-    // Consulta para eliminar el producto
-    $sql = "DELETE FROM producto WHERE pro_id = :id";
-    $stmt = $conn->prepare($sql);
-    $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+    // Verifica si el producto está en el carrito
+    $queryDetalle = "SELECT * FROM detallecarrito WHERE det_car_id = :carritoId AND det_pro_id = :productoId";
+    $stmtDetalle = $conn->prepare($queryDetalle);
+    $stmtDetalle->bindParam(':carritoId', $carrito['car_id'], PDO::PARAM_INT);
+    $stmtDetalle->bindParam(':productoId', $productoId, PDO::PARAM_INT);
+    $stmtDetalle->execute();
 
-    // Ejecuta la consulta y devuelve el resultado
-    if ($stmt->execute()) {
-        echo json_encode(["status" => "success", "message" => "Producto eliminado correctamente"]);
-    } else {
-        echo json_encode(["status" => "error", "message" => "Error al eliminar el producto"]);
+    if ($stmtDetalle->rowCount() == 0) {
+        echo json_encode(['success' => false, 'message' => 'No se encontró el producto en el carrito para el usuario.']);
+        exit;
     }
 
-    // Cierra la declaración
-    $stmt = null;
-} else {
-    echo json_encode(["status" => "error", "message" => "ID del producto no proporcionado"]);
+    // Procede con la eliminación
+    $queryEliminar = "DELETE FROM detallecarrito WHERE det_car_id = :carritoId AND det_pro_id = :productoId";
+    $stmtEliminar = $conn->prepare($queryEliminar);
+    $stmtEliminar->bindParam(':carritoId', $carrito['car_id'], PDO::PARAM_INT);
+    $stmtEliminar->bindParam(':productoId', $productoId, PDO::PARAM_INT);
+    $stmtEliminar->execute();
+
+    if ($stmtEliminar->rowCount() > 0) {
+        echo json_encode(['success' => true, 'message' => 'Producto eliminado con éxito.']);
+    } else {
+        echo json_encode(['success' => false, 'message' => 'No se pudo eliminar el producto del carrito.']);
+    }
+
+} catch (Exception $e) {
+    echo json_encode(['success' => false, 'message' => $e->getMessage()]);
 }
 
-$conn = null; // Cierra la conexión a la base de datos
 ?>
+

@@ -6,8 +6,10 @@ require_once 'database.php'; // Incluye tu archivo de conexión a la base de dat
 $database = new Database();
 $conn = $database->getConnection();
 
-// Consulta para obtener los productos
-$sql = "SELECT pro_id, pro_nombre, pro_descripcion, pro_precio FROM producto";
+// Consulta para obtener los productos junto con la cantidad desde la tabla inventario
+$sql = "SELECT p.pro_id, p.pro_nombre, p.pro_descripcion, p.pro_precio, i.inv_cantidad
+        FROM producto p
+        JOIN inventario i ON p.pro_id = i.inv_pro_id";
 $stmt = $conn->prepare($sql);
 $stmt->execute();
 
