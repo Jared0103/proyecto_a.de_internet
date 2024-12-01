@@ -63,7 +63,7 @@ CREATE TABLE IF NOT EXISTS inventario(
 	inv_id INT NOT NULL AUTO_INCREMENT,
     inv_fecha DATE NOT NULL,
     inv_accion ENUM('Agregar','Quitar'),
-    inv_cantiad INT NOT NULL,
+    inv_cantidad INT NOT NULL,
     inv_pro_id INT NOT NULL,
     inv_adm_id INT NOT NULL,
     PRIMARY KEY (inv_id),
