@@ -47,6 +47,7 @@ document.addEventListener('DOMContentLoaded', function () {
         .catch(error => {
             console.error('Error en la solicitud:', error);
             alert('Hubo un error al agregar el producto.');
+            cargarProductos();
         });
     });
 

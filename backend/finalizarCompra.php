@@ -45,23 +45,42 @@ try {
         exit;
     }
 
-    // 2. Para cada producto, eliminarlo del inventario
+    // 2. Para cada producto, actualizar el inventario
     foreach ($productosCarrito as $producto) {
         $pro_id = $producto['det_pro_id'];
         $cantidad = $producto['det_cantidad'];
-        $precio = $producto['pro_precio'];
 
-        // 2.1 Eliminar el inventario de los productos
-        $queryEliminarInventario = "
-            DELETE FROM inventario 
+        // 2.1 Actualizar la cantidad en el inventario
+        $queryActualizarInventario = "
+            UPDATE inventario 
+            SET inv_cantidad = inv_cantidad - :cantidad
             WHERE inv_pro_id = :pro_id 
-            AND inv_accion = 'Agregar'
-            LIMIT :cantidad
         ";
-        $stmtEliminarInventario = $conn->prepare($queryEliminarInventario);
-        $stmtEliminarInventario->bindParam(':cantidad', $cantidad, PDO::PARAM_INT);
-        $stmtEliminarInventario->bindParam(':pro_id', $pro_id, PDO::PARAM_INT);
-        $stmtEliminarInventario->execute();
+        $stmtActualizarInventario = $conn->prepare($queryActualizarInventario);
+        $stmtActualizarInventario->bindParam(':cantidad', $cantidad, PDO::PARAM_INT);
+        $stmtActualizarInventario->bindParam(':pro_id', $pro_id, PDO::PARAM_INT);
+        $stmtActualizarInventario->execute();
+
+        // 2.2 Verificar si la cantidad en inventario es cero y eliminar el producto si es necesario
+        $queryVerificarInventario = "
+            SELECT inv_cantidad
+            FROM inventario
+            WHERE inv_pro_id = :pro_id
+        ";
+        $stmtVerificarInventario = $conn->prepare($queryVerificarInventario);
+        $stmtVerificarInventario->bindParam(':pro_id', $pro_id, PDO::PARAM_INT);
+        $stmtVerificarInventario->execute();
+        $cantidadRestante = $stmtVerificarInventario->fetchColumn();
+
+        if ($cantidadRestante <= 0) {
+            $queryEliminarProducto = "
+                DELETE FROM inventario 
+                WHERE inv_pro_id = :pro_id
+            ";
+            $stmtEliminarProducto = $conn->prepare($queryEliminarProducto);
+            $stmtEliminarProducto->bindParam(':pro_id', $pro_id, PDO::PARAM_INT);
+            $stmtEliminarProducto->execute();
+        }
     }
 
     // 3. Vaciar el carrito
